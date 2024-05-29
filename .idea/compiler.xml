@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Keyin-JUnit-Demo" />
+        <module name="QAP1_S4_SDAT_DevOps" />
         <module name="Keyin JUnit Demo" />
       </profile>
     </annotationProcessing>

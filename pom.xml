@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>Keyin-JUnit-Demo</artifactId>
+    <artifactId>QAP1_S4_SDAT_DevOps</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

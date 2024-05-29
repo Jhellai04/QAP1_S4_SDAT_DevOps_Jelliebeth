@@ -1,54 +1,79 @@
 package com.keyin;
 
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@ExtendWith(MockitoExtension.class)
 public class SuggestionEngineTest {
-    private SuggestionEngine suggestionEngine = new SuggestionEngine();
-
-    @Mock
-    private SuggestionsDatabase mockSuggestionDB;
-    private boolean testInstanceSame = false;
+    private SuggestionEngine suggestionEngine;
+    private static final Logger logger = Logger.getLogger(SuggestionEngineTest.class.getName());
 
     @Test
-    public void testGenerateSuggestions() throws Exception {
-        suggestionEngine.loadDictionaryData( Paths.get( ClassLoader.getSystemResource("words.txt").getPath()));
+    public void testGenerateSuggestions() {
+        suggestionEngine = new SuggestionEngine();
+        try {
+            suggestionEngine.loadDictionaryData(Paths.get(ClassLoader.getSystemResource("words.txt").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            logger.log(Level.SEVERE, "Failed to load dictionary data", e);
+            fail("Failed to load dictionary data: " + e.getMessage());
+        }
 
-//        Assertions.assertTrue(testInstanceSame);
-        Assertions.assertTrue(suggestionEngine.generateSuggestions("hellw").contains("hello"));
+        String word = "crroect";
+        String expectedSuggestions = "correct\narrect";
+        String actualSuggestions = suggestionEngine.generateSuggestions(word);
+        assertEquals(expectedSuggestions, actualSuggestions);
     }
 
     @Test
-    public void testGenerateSuggestionsFail() throws Exception {
-        suggestionEngine.loadDictionaryData( Paths.get( ClassLoader.getSystemResource("words.txt").getPath()));
+    public void testGenerateSuggestions_ReturnsEmptyList() {
+        suggestionEngine = new SuggestionEngine();
+        try {
+            suggestionEngine.loadDictionaryData(Paths.get(ClassLoader.getSystemResource("words.txt").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            logger.log(Level.SEVERE, "Failed to load dictionary data", e);
+            fail("Failed to load dictionary data: " + e.getMessage());
+        }
 
-        testInstanceSame = true;
-        Assertions.assertTrue(testInstanceSame);
-        Assertions.assertFalse(suggestionEngine.generateSuggestions("hello").contains("hello"));
+        String word = "correct";
+        String expectedSuggestions = "";
+        String actualSuggestions = suggestionEngine.generateSuggestions(word);
+        assertEquals(expectedSuggestions, actualSuggestions);
     }
 
     @Test
-    public void testSuggestionsAsMock() {
-        Map<String,Integer> wordMapForTest = new HashMap<>();
+    public void testGenerateSuggestions_ForEmptyWord() {
+        suggestionEngine = new SuggestionEngine();
+        try {
+            suggestionEngine.loadDictionaryData(Paths.get(ClassLoader.getSystemResource("words.txt").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            logger.log(Level.SEVERE, "Failed to load dictionary data", e);
+            fail("Failed to load dictionary data: " + e.getMessage());
+        }
 
-        wordMapForTest.put("test", 1);
+        String word = "";
+        String expectedSuggestions = "a\nb\nc\nd\ne\nf\ng\nh\ni\nj";
+        String actualSuggestions = suggestionEngine.generateSuggestions(word);
+        assertEquals(expectedSuggestions, actualSuggestions);
+    }
 
-        Mockito.when(mockSuggestionDB.getWordMap()).thenReturn(wordMapForTest);
+    @Test
+    public void testGenerateSuggestions_WhiteSpaceTest() {
+        suggestionEngine = new SuggestionEngine();
+        try {
+            suggestionEngine.loadDictionaryData(Paths.get(ClassLoader.getSystemResource("words.txt").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            logger.log(Level.SEVERE, "Failed to load dictionary data", e);
+            fail("Failed to load dictionary data: " + e.getMessage());
+        }
 
-        suggestionEngine.setWordSuggestionDB(mockSuggestionDB);
-
-        Assertions.assertFalse(suggestionEngine.generateSuggestions("test").contains("test"));
-
-        Assertions.assertTrue(suggestionEngine.generateSuggestions("tes").contains("test"));
+        String word = " ";
+        String expectedSuggestions = "a\nb\nc\nd\ne\nf\ng\nh\ni\nj";
+        String actualSuggestions = suggestionEngine.generateSuggestions(word);
+        assertEquals(expectedSuggestions, actualSuggestions);
     }
 }
